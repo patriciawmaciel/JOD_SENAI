@@ -102,6 +102,7 @@
     white-space: nowrap;
   }
 
+  /* Banco de cartas */
   .cards-area{
     padding: 1.1rem;
     display:flex;
@@ -120,9 +121,10 @@
   .empty-note{
     padding: 1.1rem;
     color:#cbd5e1;
-    opacity:.85;
-    font-weight:700;
-    line-height:1.5;
+    opacity:.9;
+    font-weight:750;
+    line-height:1.55;
+    display:none;
   }
 
   .card{
@@ -159,6 +161,7 @@
     color:#fee2e2 !important;
   }
 
+  /* Tabs */
   .tabs{
     display:flex;
     gap:.75rem;
@@ -289,8 +292,10 @@
           <span class="pill" id="remainingPill">Restantes: —</span>
         </span>
       </div>
+
       <div class="cards-area" id="cardsArea"></div>
-      <div class="empty-note" id="emptyNote" style="display:none">
+
+      <div class="empty-note" id="emptyNote">
         ⚠️ <b>Baralho não carregou.</b><br>
         Verifique se o bloco <code>#deck</code> existe no final do HTML e tem cartas dentro.
       </div>
@@ -317,6 +322,7 @@
         </button>
       </div>
 
+      <!-- ✅ 3 DROPZONES REAIS (separadas) -->
       <div class="drop-wrapper">
         <div class="dropzone" id="dzE" data-type="estruturado"></div>
         <div class="dropzone" id="dzS" data-type="semi" style="display:none"></div>
@@ -345,6 +351,8 @@
   <div class="card" draggable="true" data-answer="estruturado">Registro de chamados (ID, data, área, status).</div>
   <div class="card" draggable="true" data-answer="estruturado">Tabela de notas (aluno, disciplina, nota).</div>
   <div class="card" draggable="true" data-answer="estruturado">Base de inscrições (nome, CPF, curso).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Tabela de pagamentos (ID, valor, data, status).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Cadastro de instrutores (nome, área, unidade).</div>
 
   <!-- Semi-estruturados -->
   <div class="card" draggable="true" data-answer="semi">Formulário exportado em JSON.</div>
@@ -353,6 +361,8 @@
   <div class="card" draggable="true" data-answer="semi">Evento no formato key=value (usuario=ana;acao=login).</div>
   <div class="card" draggable="true" data-answer="semi">Webhook com JSON (estrutura com variações).</div>
   <div class="card" draggable="true" data-answer="semi">Registro de auditoria com padrão repetido.</div>
+  <div class="card" draggable="true" data-answer="semi">Arquivo CSV exportado (separado por vírgula).</div>
+  <div class="card" draggable="true" data-answer="semi">Payload de API (JSON com campos opcionais).</div>
 
   <!-- Não estruturados -->
   <div class="card" draggable="true" data-answer="nao">E-mail de reclamação escrito livremente.</div>
@@ -361,6 +371,8 @@
   <div class="card" draggable="true" data-answer="nao">Imagem escaneada (documento).</div>
   <div class="card" draggable="true" data-answer="nao">Vídeo de aula / treinamento.</div>
   <div class="card" draggable="true" data-answer="nao">Mensagem de WhatsApp com relato.</div>
+  <div class="card" draggable="true" data-answer="nao">Foto de equipamento com anotação em papel.</div>
+  <div class="card" draggable="true" data-answer="nao">PDF com texto livre (relatório narrativo).</div>
 </div>
 
 <script>
@@ -374,6 +386,8 @@
   const roundPill = document.getElementById('roundPill');
 
   const tabs = Array.from(document.querySelectorAll('.tab'));
+
+  // ✅ 3 dropzones reais
   const dzE = document.getElementById('dzE');
   const dzS = document.getElementById('dzS');
   const dzN = document.getElementById('dzN');
@@ -427,7 +441,8 @@
       emptyNote.style.display = 'none';
     }
 
-    const selected = pickBalanced(4); // 12 cartas
+    // 12 cartas (4 de cada tipo)
+    const selected = pickBalanced(4);
     selected.forEach(c=>{
       const clone = c.cloneNode(true);
       clone.classList.remove('correct','wrong','locked','dragging');
@@ -438,7 +453,7 @@
     updateButtons();
   }
 
-  // Drag (delegation)
+  // Drag start/end
   document.addEventListener('dragstart', e=>{
     const t = e.target;
     if(!t.classList.contains('card') || isLocked) return;
@@ -452,7 +467,7 @@
     dragged = null;
   });
 
-  // drop no banco
+  // Voltar pro banco
   cardsArea.addEventListener('dragover', e=>{
     if(isLocked) return;
     e.preventDefault();
@@ -465,16 +480,18 @@
     updateButtons();
   });
 
-  // drops nas zonas
+  // Drops nas 3 zonas (separadas)
   allDropzones.forEach(zone=>{
     zone.addEventListener('dragover', e=>{
       if(isLocked) return;
       e.preventDefault();
       zone.classList.add('drag-over');
     });
+
     zone.addEventListener('dragleave', e=>{
       if(!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
     });
+
     zone.addEventListener('drop', e=>{
       if(isLocked) return;
       e.preventDefault();
@@ -484,13 +501,13 @@
     });
   });
 
-  // Tabs
-  tabs.forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      tabs.forEach(b=>b.classList.remove('active'));
+  // Tabs (alternam a zona visível)
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      const target = btn.dataset.tab;
 
+      const target = btn.dataset.tab; // estruturado | semi | nao
       dzE.style.display = (target === 'estruturado') ? 'flex' : 'none';
       dzS.style.display = (target === 'semi') ? 'flex' : 'none';
       dzN.style.display = (target === 'nao') ? 'flex' : 'none';
