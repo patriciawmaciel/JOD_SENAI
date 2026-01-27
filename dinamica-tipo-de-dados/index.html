@@ -24,7 +24,7 @@
     background:
       radial-gradient(circle at 20% 80%, rgba(59,130,246,0.12) 0%, transparent 55%),
       radial-gradient(circle at 80% 20%, rgba(139,92,246,0.12) 0%, transparent 55%),
-      radial-gradient(circle at 55% 55%, rgba(16,185,129,0.08) 0%, transparent 55%);
+      radial-gradient(circle at 55% 55%, rgba(16,185,129,0.10) 0%, transparent 55%);
     pointer-events:none;
     z-index:-1;
   }
@@ -43,7 +43,7 @@
   }
 
   .subtitle{
-    max-width: 1000px;
+    max-width: 1050px;
     margin:0 auto;
     color:#cbd5e1;
     line-height:1.65;
@@ -91,7 +91,7 @@
     color:#cbd5e1;
     font-weight:800;
     font-size:.95rem;
-    opacity:.9;
+    opacity:.95;
   }
 
   .pill{
@@ -108,7 +108,7 @@
     display:flex;
     flex-direction: column;
     gap: .95rem;
-    max-height: 70vh;
+    max-height: 72vh;
     overflow-y:auto;
   }
 
@@ -148,7 +148,7 @@
 
   .card:active{ cursor:grabbing; transform: scale(.99); }
   .card.dragging{ opacity:.45; }
-  .card.locked{ cursor:not-allowed; opacity:.85; }
+  .card.locked{ cursor:not-allowed; opacity:.88; }
 
   .correct{
     background: rgba(16,185,129,0.18) !important;
@@ -161,63 +161,71 @@
     color:#fee2e2 !important;
   }
 
-  /* Tabs */
-  .tabs{
-    display:flex;
-    gap:.75rem;
-    padding: 1rem 1.1rem;
-    border-bottom: 1px solid rgba(148,163,184,0.14);
-    background: rgba(2,10,25,0.15);
-    flex-wrap: wrap;
+  /* CLASSIFICAÇÃO: 3 COLUNAS */
+  .classification{
+    padding: 1.1rem;
   }
 
-  .tab{
-    border: 1px solid rgba(148,163,184,0.22);
-    background: rgba(30,41,59,0.55);
-    color:#f8fafc;
-    padding: .75rem 1rem;
-    border-radius: 999px;
-    cursor:pointer;
-    font-weight: 900;
+  .columns{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .col{
+    border: 1px solid rgba(148,163,184,0.16);
+    border-radius: 1.15rem;
+    overflow:hidden;
+    background: rgba(2,10,25,0.10);
+    position: relative;
+    min-height: 62vh;
+  }
+
+  .col::before{
+    content:'';
+    position:absolute; left:0; right:0; top:0;
+    height:3px;
+    background: linear-gradient(90deg,transparent, var(--accent), transparent);
+    opacity: .95;
+  }
+
+  .col-head{
+    padding: 1rem 1rem .85rem;
+    border-bottom: 1px solid rgba(148,163,184,0.12);
     display:flex;
     align-items:center;
-    gap:.55rem;
-    transition: transform .15s ease, border-color .15s ease;
-  }
-
-  .tab:hover{ transform: translateY(-1px); border-color: rgba(96,165,250,0.55); }
-  .tab.active{
-    border-color: rgba(96,165,250,0.9);
-    box-shadow: 0 0 0 2px rgba(96,165,250,0.18) inset;
+    gap:.75rem;
+    font-weight: 900;
   }
 
   .icon{
-    width: 32px; height: 32px;
+    width: 34px; height: 34px;
     display:flex; align-items:center; justify-content:center;
     border-radius: 10px;
     background: var(--accent);
     color:white;
     font-size: 16px;
+    flex: 0 0 auto;
   }
 
-  .drop-wrapper{ padding: 1.1rem; }
-
   .dropzone{
-    min-height: 56vh;
-    border: 2px dashed rgba(148,163,184,0.28);
-    border-radius: 1rem;
-    padding: 1.1rem;
+    min-height: calc(62vh - 62px);
+    padding: 1rem;
     display:flex;
     flex-direction: column;
-    gap:.95rem;
+    gap: .95rem;
+    border-top: 0;
+    border: 2px dashed rgba(148,163,184,0.22);
+    border-radius: 0 0 1.15rem 1.15rem;
+    margin: 0 1rem 1rem 1rem;
+    background: rgba(2,10,25,0.08);
     transition: all .18s ease;
-    background: rgba(2,10,25,0.12);
   }
 
   .dropzone.drag-over{
     background: rgba(59,130,246,0.08);
     border-color:#3b82f6;
-    box-shadow: 0 0 22px rgba(59,130,246,0.18);
+    box-shadow: 0 0 22px rgba(59,130,246,0.16);
   }
 
   .controls{
@@ -263,11 +271,16 @@
     line-height:1.65;
   }
 
+  @media (max-width: 1200px){
+    .columns{ grid-template-columns: 1fr; }
+    .col{ min-height: 34vh; }
+    .dropzone{ min-height: 24vh; }
+  }
+
   @media (max-width: 1100px){
     body{ padding: 1.2rem; }
     .board{ grid-template-columns: 1fr; }
-    .cards-area{ max-height: 42vh; }
-    .dropzone{ min-height: 40vh; }
+    .cards-area{ max-height: 40vh; }
   }
 </style>
 </head>
@@ -278,8 +291,8 @@
   <div class="header">
     <h1>Tipos de Dados</h1>
     <p class="subtitle">
-      Arraste as cartas do banco (à esquerda) para a categoria correta.
-      <br><b>Dica:</b> Estruturado = tabela | Semi-estruturado = padrão | Não estruturado = conteúdo livre
+      Arraste as cartas do banco (à esquerda) para a categoria correta (à direita).<br>
+      <b>Dica:</b> Estruturado = tabela | Semi-estruturado = padrão | Não estruturado = conteúdo livre
     </p>
   </div>
 
@@ -310,23 +323,34 @@
         </span>
       </div>
 
-      <div class="tabs" role="tablist">
-        <button class="tab active" data-tab="estruturado" style="--accent:#3b82f6" type="button">
-          <span class="icon">📊</span> Estruturados
-        </button>
-        <button class="tab" data-tab="semi" style="--accent:#8b5cf6" type="button">
-          <span class="icon">🧾</span> Semi-estruturados
-        </button>
-        <button class="tab" data-tab="nao" style="--accent:#10b981" type="button">
-          <span class="icon">📁</span> Não estruturados
-        </button>
-      </div>
+      <div class="classification">
+        <div class="columns">
 
-      <!-- ✅ 3 DROPZONES REAIS (separadas) -->
-      <div class="drop-wrapper">
-        <div class="dropzone" id="dzE" data-type="estruturado"></div>
-        <div class="dropzone" id="dzS" data-type="semi" style="display:none"></div>
-        <div class="dropzone" id="dzN" data-type="nao" style="display:none"></div>
+          <div class="col" style="--accent:#3b82f6">
+            <div class="col-head">
+              <div class="icon">📊</div>
+              Estruturados
+            </div>
+            <div class="dropzone" id="dzE" data-type="estruturado"></div>
+          </div>
+
+          <div class="col" style="--accent:#8b5cf6">
+            <div class="col-head">
+              <div class="icon">🧾</div>
+              Semi-estruturados
+            </div>
+            <div class="dropzone" id="dzS" data-type="semi"></div>
+          </div>
+
+          <div class="col" style="--accent:#10b981">
+            <div class="col-head">
+              <div class="icon">📁</div>
+              Não estruturados
+            </div>
+            <div class="dropzone" id="dzN" data-type="nao"></div>
+          </div>
+
+        </div>
       </div>
     </section>
   </div>
@@ -353,6 +377,7 @@
   <div class="card" draggable="true" data-answer="estruturado">Base de inscrições (nome, CPF, curso).</div>
   <div class="card" draggable="true" data-answer="estruturado">Tabela de pagamentos (ID, valor, data, status).</div>
   <div class="card" draggable="true" data-answer="estruturado">Cadastro de instrutores (nome, área, unidade).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Planilha de consumo de energia (mês, unidade, kWh).</div>
 
   <!-- Semi-estruturados -->
   <div class="card" draggable="true" data-answer="semi">Formulário exportado em JSON.</div>
@@ -361,8 +386,9 @@
   <div class="card" draggable="true" data-answer="semi">Evento no formato key=value (usuario=ana;acao=login).</div>
   <div class="card" draggable="true" data-answer="semi">Webhook com JSON (estrutura com variações).</div>
   <div class="card" draggable="true" data-answer="semi">Registro de auditoria com padrão repetido.</div>
-  <div class="card" draggable="true" data-answer="semi">Arquivo CSV exportado (separado por vírgula).</div>
   <div class="card" draggable="true" data-answer="semi">Payload de API (JSON com campos opcionais).</div>
+  <div class="card" draggable="true" data-answer="semi">Arquivo .eml exportado (headers + corpo).</div>
+  <div class="card" draggable="true" data-answer="semi">Log em texto com padrão fixo (data | nível | mensagem).</div>
 
   <!-- Não estruturados -->
   <div class="card" draggable="true" data-answer="nao">E-mail de reclamação escrito livremente.</div>
@@ -371,8 +397,9 @@
   <div class="card" draggable="true" data-answer="nao">Imagem escaneada (documento).</div>
   <div class="card" draggable="true" data-answer="nao">Vídeo de aula / treinamento.</div>
   <div class="card" draggable="true" data-answer="nao">Mensagem de WhatsApp com relato.</div>
+  <div class="card" draggable="true" data-answer="nao">PDF narrativo com texto livre (relatório).</div>
   <div class="card" draggable="true" data-answer="nao">Foto de equipamento com anotação em papel.</div>
-  <div class="card" draggable="true" data-answer="nao">PDF com texto livre (relatório narrativo).</div>
+  <div class="card" draggable="true" data-answer="nao">Gravação de reunião (áudio).</div>
 </div>
 
 <script>
@@ -385,9 +412,6 @@
   const remainingPill = document.getElementById('remainingPill');
   const roundPill = document.getElementById('roundPill');
 
-  const tabs = Array.from(document.querySelectorAll('.tab'));
-
-  // ✅ 3 dropzones reais
   const dzE = document.getElementById('dzE');
   const dzS = document.getElementById('dzS');
   const dzN = document.getElementById('dzN');
@@ -418,7 +442,7 @@
     isLocked = false;
   }
 
-  function pickBalanced(nEach=4){
+  function pickBalanced(nEach=5){
     const all = Array.from(deck.querySelectorAll('.card'));
     const E = all.filter(c => c.dataset.answer === 'estruturado');
     const S = all.filter(c => c.dataset.answer === 'semi');
@@ -441,8 +465,8 @@
       emptyNote.style.display = 'none';
     }
 
-    // 12 cartas (4 de cada tipo)
-    const selected = pickBalanced(4);
+    // 15 cartas por rodada (5 de cada tipo)
+    const selected = pickBalanced(5);
     selected.forEach(c=>{
       const clone = c.cloneNode(true);
       clone.classList.remove('correct','wrong','locked','dragging');
@@ -453,7 +477,7 @@
     updateButtons();
   }
 
-  // Drag start/end
+  // Drag start/end (delegation)
   document.addEventListener('dragstart', e=>{
     const t = e.target;
     if(!t.classList.contains('card') || isLocked) return;
@@ -467,7 +491,7 @@
     dragged = null;
   });
 
-  // Voltar pro banco
+  // Drop no banco
   cardsArea.addEventListener('dragover', e=>{
     if(isLocked) return;
     e.preventDefault();
@@ -480,7 +504,7 @@
     updateButtons();
   });
 
-  // Drops nas 3 zonas (separadas)
+  // Drops nas 3 zonas
   allDropzones.forEach(zone=>{
     zone.addEventListener('dragover', e=>{
       if(isLocked) return;
@@ -498,19 +522,6 @@
       zone.classList.remove('drag-over');
       if(dragged) zone.appendChild(dragged);
       updateButtons();
-    });
-  });
-
-  // Tabs (alternam a zona visível)
-  tabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabs.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      const target = btn.dataset.tab; // estruturado | semi | nao
-      dzE.style.display = (target === 'estruturado') ? 'flex' : 'none';
-      dzS.style.display = (target === 'semi') ? 'flex' : 'none';
-      dzN.style.display = (target === 'nao') ? 'flex' : 'none';
     });
   });
 
