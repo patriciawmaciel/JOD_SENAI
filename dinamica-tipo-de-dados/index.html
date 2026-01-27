@@ -3,361 +3,369 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Tipos de Dados — Classificação</title>
+<title>Tipos de Dados — Estruturados, Semi-estruturados e Não estruturados</title>
 
 <style>
   * { box-sizing: border-box; }
 
-  body{
+  body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-    color:#f8fafc;
-    margin:0;
-    padding:2rem;
-    min-height:100vh;
-    overflow-x:hidden;
-  }
-
-  body::before{
-    content:'';
-    position:fixed;
-    inset:0;
-    background:
-      radial-gradient(circle at 20% 80%, rgba(59,130,246,0.12) 0%, transparent 55%),
-      radial-gradient(circle at 80% 20%, rgba(139,92,246,0.12) 0%, transparent 55%),
-      radial-gradient(circle at 55% 55%, rgba(16,185,129,0.08) 0%, transparent 55%);
-    pointer-events:none;
-    z-index:-1;
-  }
-
-  .container{ max-width: 1400px; margin:0 auto; }
-
-  .header{
-    text-align:center;
-    margin-bottom:1.5rem;
-  }
-
-  h1{
-    font-size: clamp(2.1rem, 3.4vw, 3rem);
-    font-weight: 850;
-    margin:0 0 .7rem 0;
-    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #34d399 100%);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    background-clip:text;
-  }
-
-  .subtitle{
-    max-width: 980px;
-    margin:0 auto;
-    color:#cbd5e1;
-    line-height:1.65;
-    font-size:1.08rem;
-  }
-
-  /* Layout principal */
-  .board{
-    display:grid;
-    grid-template-columns: 1.05fr 1.95fr;
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-    align-items: start;
-  }
-
-  /* Painéis */
-  .panel{
-    background: rgba(15, 23, 42, 0.82);
-    backdrop-filter: blur(18px);
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    border-radius: 1.25rem;
-    box-shadow: 0 14px 40px rgba(0,0,0,0.35);
-    overflow: hidden;
+    color: #f8fafc;
+    margin: 0;
+    padding: 2rem;
+    min-height: 100vh;
     position: relative;
+    overflow-x: hidden;
   }
 
-  .panel::before{
-    content:'';
-    position:absolute;
-    top:0; left:0; right:0;
-    height:3px;
-    background: linear-gradient(90deg, transparent, rgba(96,165,250,0.9), transparent);
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 55%),
+      radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 55%),
+      radial-gradient(circle at 55% 55%, rgba(16, 185, 129, 0.08) 0%, transparent 55%);
+    pointer-events: none;
+    z-index: -1;
   }
 
-  .panel-header{
-    padding: 1.1rem 1.2rem;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  .container { max-width: 1480px; margin: 0 auto; }
+
+  .topbar{
     display:flex;
     align-items:center;
     justify-content: space-between;
-    gap:1rem;
-  }
-
-  .panel-title{
-    display:flex;
-    align-items:center;
-    gap:.65rem;
-    font-weight: 800;
-    letter-spacing: .02em;
-  }
-
-  .pill{
-    font-size: .78rem;
-    color:#cbd5e1;
-    border:1px solid rgba(148,163,184,0.25);
-    padding:.25rem .55rem;
-    border-radius: 999px;
-    background: rgba(30, 41, 59, 0.55);
-  }
-
-  /* Banco de cartas (lateral) */
-  .cards-panel{
-    position: sticky;
-    top: 1.25rem;
-  }
-
-  .cards-area{
-    padding: 1rem;
-    display:flex;
-    flex-direction: column;
-    gap: .9rem;
-    max-height: 65vh;
-    overflow: auto;
-  }
-
-  .cards-area::-webkit-scrollbar{ width: 10px; }
-  .cards-area::-webkit-scrollbar-thumb{
-    background: rgba(148,163,184,0.25);
-    border-radius: 999px;
-  }
-
-  .card{
-    background: rgba(30, 41, 59, 0.88);
-    border: 1px solid rgba(148, 163, 184, 0.20);
-    border-radius: 1rem;
-    padding: 1rem 1.1rem;
-    box-shadow: 0 10px 26px rgba(0,0,0,0.24);
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease;
-    user-select: none;
-    cursor: grab;
-    font-weight: 650;
-    line-height:1.35;
-  }
-
-  .card:active{ cursor: grabbing; transform: scale(0.99); }
-  .card:hover{
-    transform: translateY(-2px);
-    box-shadow: 0 14px 34px rgba(0,0,0,0.32);
-    border-color: rgba(96,165,250,0.45);
-  }
-
-  .card.dragging{ opacity: .45; }
-  .card.locked{ cursor:not-allowed !important; opacity:.88; }
-
-  .meta{
-    display:block;
-    margin-top:.55rem;
-    font-size:.86rem;
-    font-weight: 540;
-    color:#94a3b8;
-  }
-
-  /* Colunas de classificação */
-  .zones-panel::before{
-    background: linear-gradient(90deg, transparent, rgba(167,139,250,0.85), transparent);
-  }
-
-  .zones-wrap{
-    padding: 1rem;
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
+    margin-bottom: 1.25rem;
   }
 
-  .zone{
-    border-radius: 1.1rem;
-    border: 1px solid rgba(148,163,184,0.18);
-    background: rgba(2, 10, 25, 0.25);
-    overflow: hidden;
-    min-height: 56vh;
-    display:flex;
-    flex-direction: column;
-  }
-
-  .zone[data-type="estruturado"]{ --accent:#3b82f6; }
-  .zone[data-type="semi"]{ --accent:#8b5cf6; }
-  .zone[data-type="nao"]{ --accent:#10b981; }
-
-  .zone-header{
-    padding: .95rem .95rem;
-    display:flex;
+  .back-link{
+    display:inline-flex;
     align-items:center;
-    justify-content:center;
-    gap:.6rem;
+    gap:.55rem;
+    padding:.75rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: rgba(30, 41, 59, 0.65);
+    color:#f8fafc;
+    text-decoration:none;
+    font-weight: 800;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.20);
+  }
+
+  .back-link:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(0,0,0,0.28);
+    border-color: rgba(96,165,250,0.55);
+  }
+
+  .badge-round{
+    display:inline-flex;
+    align-items:center;
+    gap:.55rem;
+    padding:.65rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.55);
+    color:#cbd5e1;
+    font-weight: 800;
+  }
+
+  .header { text-align: center; margin-bottom: 2.25rem; }
+
+  h1 {
+    font-size: 3rem;
     font-weight: 900;
-    letter-spacing:.02em;
-    border-bottom: 1px solid rgba(148,163,184,0.14);
+    margin: 0 0 0.75rem 0;
+    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #34d399 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+  }
+
+  p.subtitle {
+    font-size: 1.15rem;
+    max-width: 980px;
+    margin: 0 auto;
+    line-height: 1.65;
+    color: #cbd5e1;
+    text-align: center;
+  }
+
+  .phrases-section {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    margin-bottom: 2.25rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     position: relative;
+    overflow: hidden;
   }
 
-  .zone-header::before{
-    content:'';
-    position:absolute;
-    top:0; left:0; right:0;
-    height:3px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  .phrases-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #3b82f6, transparent);
   }
 
-  .icon{
-    width: 30px; height: 30px;
-    display:flex; align-items:center; justify-content:center;
-    border-radius: 8px;
-    background: var(--accent);
-    font-size: 16px;
+  .phrases-section h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 0 0 1rem 0;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #60a5fa;
   }
 
-  .dropzone{
-    padding: .95rem;
-    flex:1;
-    display:flex;
-    flex-direction: column;
-    gap: .85rem;
-    border: 2px dashed rgba(148,163,184,0.22);
-    border-radius: 1rem;
-    margin: .95rem;
-    transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
-  }
-
-  .dropzone.drag-over{
-    background: rgba(59,130,246,0.10);
-    border-color: rgba(96,165,250,0.65);
-    box-shadow: 0 0 22px rgba(59,130,246,0.18);
-  }
-
-  /* Controles */
-  .controls{
-    display:flex;
+  .phrases-area {
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 1rem;
-    margin-top: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background: rgba(59, 130, 246, 0.05);
+    border: 2px solid rgba(59, 130, 246, 0.2);
+    transition: all 0.3s ease;
+    min-height: 120px;
   }
 
-  button{
+  .phrases-area.drag-over {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+  }
+
+  /* ✅ MAIS LARGO: colunas maiores e mais espaço */
+  .classification-board {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.2rem;
+    align-items: start;
+  }
+
+  .classification-column {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 1.5rem;
+    padding: 1.6rem;
+    min-height: 520px; /* ✅ mais alto também */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .classification-column::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+  }
+
+  .classification-column[data-type="estruturado"] { --accent-color: #3b82f6; }
+  .classification-column[data-type="semi"]       { --accent-color: #8b5cf6; }
+  .classification-column[data-type="nao"]        { --accent-color: #10b981; }
+
+  .classification-column h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #f8fafc;
+  }
+
+  .column-icon {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--accent-color);
+    color: white;
+    font-size: 18px;
+  }
+
+  /* Sem explicação nas caixinhas */
+  .dropzone {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
     border-radius: 1rem;
-    border: 1px solid rgba(148, 163, 184, 0.28);
+    transition: all 0.3s ease;
+    border: 2px dashed rgba(148, 163, 184, 0.28);
+    min-height: 420px; /* ✅ grande o suficiente */
+  }
+
+  .dropzone.drag-over {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+  }
+
+  .card {
+    background: rgba(30, 41, 59, 0.9);
+    backdrop-filter: blur(10px);
+    color: #f8fafc;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 1rem;
+    padding: 1.1rem 1.35rem;
+    font-size: 1rem;
+    font-weight: 700;
+    user-select: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    line-height: 1.35;
+  }
+
+  .card[draggable="true"] { cursor: grab; }
+  .card[draggable="true"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  }
+  .card[draggable="true"]:active { cursor: grabbing; transform: scale(0.99); }
+  .card.dragging { opacity: 0.4; }
+  .card.locked { cursor: not-allowed !important; opacity: 0.88; }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.6rem;
+    flex-wrap: wrap;
+  }
+
+  button {
+    border-radius: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.3);
     padding: 1rem 1.6rem;
     font-size: 1rem;
-    font-weight: 800;
+    font-weight: 900;
     background: rgba(30, 41, 59, 0.8);
     backdrop-filter: blur(10px);
     color: #f8fafc;
     cursor: pointer;
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.22);
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2);
   }
 
-  button:hover{
+  button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 14px 34px rgba(0,0,0,0.28);
-    border-color: rgba(96,165,250,0.55);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+    border-color: rgba(96, 165, 250, 0.55);
   }
 
-  button:disabled{
-    opacity:.45;
-    cursor:not-allowed;
-    transform:none !important;
-    box-shadow:none !important;
+  button:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
   }
 
-  .footer-note{
-    text-align:center;
-    margin: 1.25rem auto 0;
-    max-width: 980px;
-    color:#94a3b8;
-    font-weight: 650;
-    line-height:1.65;
-  }
-
-  .correct{
+  .correct {
     background: rgba(16, 185, 129, 0.18) !important;
     border-color: #10b981 !important;
     color: #d1fae5 !important;
-    box-shadow: 0 10px 26px rgba(16,185,129,0.18) !important;
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25) !important;
   }
 
-  .wrong{
+  .wrong {
     background: rgba(239, 68, 68, 0.18) !important;
     border-color: #ef4444 !important;
     color: #fee2e2 !important;
-    box-shadow: 0 10px 26px rgba(239,68,68,0.18) !important;
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.25) !important;
   }
 
-  @media (max-width: 1100px){
-    .board{ grid-template-columns: 1fr; }
-    .cards-panel{ position: relative; top: 0; }
-    .cards-area{ max-height: 40vh; }
-    .zones-wrap{ grid-template-columns: 1fr; }
-    .zone{ min-height: auto; }
-    .dropzone{ min-height: 220px; }
+  .footer-note {
+    text-align: center;
+    font-size: 1.05rem;
+    color: #94a3b8;
+    max-width: 980px;
+    margin: 0 auto;
+    line-height: 1.65;
+    font-weight: 700;
   }
 
-  @media (max-width: 520px){
-    body{ padding: 1rem; }
-    .controls{ flex-direction: column; align-items: center; }
-    button{ width: 230px; }
+  @media (max-width: 1100px) {
+    body { padding: 1.5rem; }
+    .classification-board { grid-template-columns: 1fr; }
+    .classification-column { min-height: auto; }
+    .dropzone { min-height: 220px; }
+  }
+
+  @media (max-width: 520px) {
+    body { padding: 1rem; }
+    .controls { flex-direction: column; align-items: center; }
+    button { width: 240px; }
+    .topbar{ flex-direction: column; }
   }
 </style>
 </head>
 
 <body>
 <div class="container">
+
+  <div class="topbar">
+    <a class="back-link" href="../">
+      ◀ Voltar para Atividades
+    </a>
+    <div class="badge-round" id="roundBadge">Rodada 1</div>
+  </div>
+
   <div class="header">
     <h1>Tipos de Dados</h1>
     <p class="subtitle">
-      Arraste as cartas da esquerda para as categorias à direita.
-      <br><b>Dica:</b> <b>Estruturado</b> parece tabela; <b>Semi-estruturado</b> tem padrão (JSON/XML/log);
-      <b>Não estruturado</b> é conteúdo livre (texto, áudio, imagem, vídeo).
+      Arraste cada carta para a categoria correta.
+      <br><b>Dica:</b> Estruturado = “tabela”; Semi-estruturado = “padrão” (JSON/XML/log);
+      Não estruturado = “conteúdo livre” (texto, áudio, imagem, vídeo).
     </p>
   </div>
 
-  <div class="board">
-    <!-- LATERAL: CARTAS -->
-    <section class="panel cards-panel">
-      <div class="panel-header">
-        <div class="panel-title">🗂️ Banco de Cartas</div>
-        <div class="pill" id="remainingPill">0 cartas</div>
-      </div>
-      <div class="cards-area" id="cardsArea"></div>
-    </section>
+  <div class="phrases-section">
+    <h2>
+      <div class="column-icon">⚡</div>
+      CARTAS PARA CLASSIFICAR
+    </h2>
+    <div class="phrases-area" id="phrases-area"></div>
+  </div>
 
-    <!-- DIREITA: CAIXAS -->
-    <section class="panel zones-panel">
-      <div class="panel-header">
-        <div class="panel-title">🎯 Classificação</div>
-        <div class="pill">Arraste &amp; Solte</div>
-      </div>
+  <div class="classification-board">
+    <div class="classification-column" data-type="estruturado">
+      <h2><div class="column-icon">📊</div> ESTRUTURADOS</h2>
+      <div class="dropzone" data-type="estruturado"></div>
+    </div>
 
-      <div class="zones-wrap">
-        <div class="zone" data-type="estruturado">
-          <div class="zone-header"><span class="icon">📊</span> Estruturados</div>
-          <div class="dropzone" data-type="estruturado"></div>
-        </div>
+    <div class="classification-column" data-type="semi">
+      <h2><div class="column-icon">🧾</div> SEMI-ESTRUTURADOS</h2>
+      <div class="dropzone" data-type="semi"></div>
+    </div>
 
-        <div class="zone" data-type="semi">
-          <div class="zone-header"><span class="icon">🧾</span> Semi-estruturados</div>
-          <div class="dropzone" data-type="semi"></div>
-        </div>
-
-        <div class="zone" data-type="nao">
-          <div class="zone-header"><span class="icon">📁</span> Não estruturados</div>
-          <div class="dropzone" data-type="nao"></div>
-        </div>
-      </div>
-    </section>
+    <div class="classification-column" data-type="nao">
+      <h2><div class="column-icon">📁</div> NÃO ESTRUTURADOS</h2>
+      <div class="dropzone" data-type="nao"></div>
+    </div>
   </div>
 
   <div class="controls">
     <button id="checkBtn" onclick="check()" disabled>Conferir Respostas</button>
-    <button id="resetBtn" onclick="reset()" disabled>Refazer Atividade</button>
+    <button id="resetBtn" onclick="resetRound()" disabled>Refazer Atividade</button>
   </div>
 
   <div class="footer-note">
@@ -366,133 +374,81 @@
   </div>
 </div>
 
-<!-- Baralho (não aparece) -->
-<div id="deck" style="display:none">
+<!-- Baralho completo (não aparece) -->
+<div id="cards" style="display:none">
   <!-- ESTRUTURADOS -->
-  <div class="card" draggable="true" data-answer="estruturado">
-    Planilha de presença (data, turma, aluno, status)
-    <span class="meta">Campos fixos em colunas</span>
-  </div>
-  <div class="card" draggable="true" data-answer="estruturado">
-    Tabela de matrículas (aluno, curso, data, situação)
-    <span class="meta">Registro em banco relacional</span>
-  </div>
-  <div class="card" draggable="true" data-answer="estruturado">
-    Inventário de equipamentos (patrimônio, local, responsável)
-    <span class="meta">Base tabular padronizada</span>
-  </div>
-  <div class="card" draggable="true" data-answer="estruturado">
-    Notas por disciplina (aluno, avaliação, nota, frequência)
-    <span class="meta">Tabela com métricas</span>
-  </div>
-  <div class="card" draggable="true" data-answer="estruturado">
-    Registro de chamados (ID, data, área, status)
-    <span class="meta">Campos obrigatórios</span>
-  </div>
+  <div class="card" draggable="true" data-answer="estruturado">Planilha de presença (data, turma, aluno, status).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Tabela de matrículas (aluno, curso, data, situação).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Cadastro de docentes (CPF, unidade, área, carga horária).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Inventário de equipamentos (patrimônio, local, responsável).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Registro de chamados (ID, data, área, status).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Tabela de notas (aluno, disciplina, avaliação, nota).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Lista de turmas (código, curso, turno, unidade).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Base de inscrições (nome, CPF, curso, data inscrição).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Tabela de frequência (aluno, aula, presença/ausência).</div>
+  <div class="card" draggable="true" data-answer="estruturado">Relatório tabular de consumo (mês, unidade, kWh).</div>
 
   <!-- SEMI-ESTRUTURADOS -->
-  <div class="card" draggable="true" data-answer="semi">
-    Formulário online exportado em JSON
-    <span class="meta">Chaves/valores; estrutura flexível</span>
-  </div>
-  <div class="card" draggable="true" data-answer="semi">
-    Arquivo XML de integração (cadastro + tags)
-    <span class="meta">Estrutura marcada por tags</span>
-  </div>
-  <div class="card" draggable="true" data-answer="semi">
-    Logs de acesso (timestamp, usuário, evento)
-    <span class="meta">Padrão repetido em texto</span>
-  </div>
-  <div class="card" draggable="true" data-answer="semi">
-    Registro de API (payload JSON com campos opcionais)
-    <span class="meta">Estruturado, mas varia por evento</span>
-  </div>
-  <div class="card" draggable="true" data-answer="semi">
-    Evento “key=value” (ex.: usuario=ana;acao=login)
-    <span class="meta">Estrutura parcial dentro do texto</span>
-  </div>
+  <div class="card" draggable="true" data-answer="semi">Exportação de formulário em JSON (campos variáveis).</div>
+  <div class="card" draggable="true" data-answer="semi">Arquivo XML de integração entre sistemas (tags e campos).</div>
+  <div class="card" draggable="true" data-answer="semi">Logs de acesso (timestamp, usuário, evento).</div>
+  <div class="card" draggable="true" data-answer="semi">Payload JSON de API (campos opcionais por evento).</div>
+  <div class="card" draggable="true" data-answer="semi">Evento no formato key=value (usuario=ana;acao=login).</div>
+  <div class="card" draggable="true" data-answer="semi">Mensagem de sistema padronizada (template + campos).</div>
+  <div class="card" draggable="true" data-answer="semi">Registro de auditoria em texto com padrão repetido.</div>
+  <div class="card" draggable="true" data-answer="semi">Webhook com JSON (estrutura, mas com variações).</div>
+  <div class="card" draggable="true" data-answer="semi">Formulário exportado em JSON Lines (uma linha por evento).</div>
+  <div class="card" draggable="true" data-answer="semi">Evento de sistema em “key=value” com campos opcionais.</div>
 
   <!-- NÃO ESTRUTURADOS -->
-  <div class="card" draggable="true" data-answer="nao">
-    E-mail de reclamação escrito livremente
-    <span class="meta">Texto sem padrão fixo</span>
-  </div>
-  <div class="card" draggable="true" data-answer="nao">
-    Comentário aberto em pesquisa de satisfação
-    <span class="meta">Linguagem natural</span>
-  </div>
-  <div class="card" draggable="true" data-answer="nao">
-    Áudio de atendimento gravado
-    <span class="meta">Conteúdo em voz</span>
-  </div>
-  <div class="card" draggable="true" data-answer="nao">
-    Imagem de documento escaneado
-    <span class="meta">Informação “dentro” da imagem</span>
-  </div>
-  <div class="card" draggable="true" data-answer="nao">
-    Vídeo de aula / treinamento
-    <span class="meta">Conteúdo multimídia</span>
-  </div>
+  <div class="card" draggable="true" data-answer="nao">E-mail de reclamação escrito livremente.</div>
+  <div class="card" draggable="true" data-answer="nao">Comentário aberto em pesquisa de satisfação.</div>
+  <div class="card" draggable="true" data-answer="nao">Áudio de atendimento gravado.</div>
+  <div class="card" draggable="true" data-answer="nao">Imagem de documento escaneado.</div>
+  <div class="card" draggable="true" data-answer="nao">Vídeo de aula / treinamento.</div>
+  <div class="card" draggable="true" data-answer="nao">Foto de equipamento com defeito.</div>
+  <div class="card" draggable="true" data-answer="nao">Documento em PDF com texto livre e imagens.</div>
+  <div class="card" draggable="true" data-answer="nao">Mensagem de WhatsApp com relato do aluno.</div>
+  <div class="card" draggable="true" data-answer="nao">Ata de reunião em texto corrido (Word).</div>
+  <div class="card" draggable="true" data-answer="nao">Anotações livres em bloco de notas.</div>
 </div>
 
 <script>
-  const cardsArea = document.getElementById('cardsArea');
-  const deck = document.getElementById('deck');
   const zones = Array.from(document.querySelectorAll('.dropzone'));
+  const cardContainer = document.getElementById('cards');
+  const phrasesArea = document.getElementById('phrases-area');
   const checkBtn = document.getElementById('checkBtn');
   const resetBtn = document.getElementById('resetBtn');
-  const remainingPill = document.getElementById('remainingPill');
+  const roundBadge = document.getElementById('roundBadge');
 
-  let dragged = null;
   let isLocked = false;
+  let dragged = null;
+  let round = 1;
 
-  function shuffle(arr){
-    for(let i=arr.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
-      [arr[i],arr[j]]=[arr[j],arr[i]];
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
     }
-    return arr;
+    return array;
   }
 
-  function setRemaining(){
-    const remaining = cardsArea.querySelectorAll('.card').length;
-    remainingPill.textContent = `${remaining} carta${remaining===1?'':'s'}`;
-    checkBtn.disabled = isLocked || remaining > 0;
+  function updateButtons() {
+    const remaining = phrasesArea.children.length;
+    checkBtn.disabled = (remaining > 0) || isLocked;
     resetBtn.disabled = !isLocked;
   }
 
-  function clearZones(){
+  function clearAll() {
+    phrasesArea.innerHTML = '';
     zones.forEach(z => z.innerHTML = '');
   }
 
-  function loadBalanced(){
-    // pega 4 de cada tipo (total 12) para manter “banco cheio” e prática melhor
-    const all = Array.from(deck.querySelectorAll('.card'));
-    const structured = all.filter(c => c.dataset.answer === 'estruturado');
-    const semi = all.filter(c => c.dataset.answer === 'semi');
-    const un = all.filter(c => c.dataset.answer === 'nao');
-
-    const pick = (a,n)=> shuffle([...a]).slice(0,n);
-
-    const selected = [
-      ...pick(structured, 4),
-      ...pick(semi, 4),
-      ...pick(un, 4),
-    ];
-
-    cardsArea.innerHTML = '';
-    shuffle(selected).forEach(c => cardsArea.appendChild(c.cloneNode(true)));
-    clearZones();
-    isLocked = false;
-    setRemaining();
-  }
-
-  loadBalanced();
-
+  // ✅ Event delegation: garante arrastar mesmo após “Refazer”
   document.addEventListener('dragstart', (e) => {
     const t = e.target;
-    if(!t.classList.contains('card')) return;
-    if(isLocked) return;
+    if (!t.classList.contains('card')) return;
+    if (isLocked) return;
 
     dragged = t;
     e.dataTransfer.setData('text/plain', 'card');
@@ -500,68 +456,100 @@
   });
 
   document.addEventListener('dragend', () => {
-    if(dragged) dragged.classList.remove('dragging');
+    if (dragged) dragged.classList.remove('dragging');
     dragged = null;
   });
 
-  // Cards area as drop-back (para devolver carta)
-  cardsArea.addEventListener('dragover', (e) => {
-    if(isLocked) return;
-    e.preventDefault();
+  // Banca
+  phrasesArea.addEventListener('dragover', (e) => {
+    if (!isLocked) { e.preventDefault(); phrasesArea.classList.add('drag-over'); }
   });
 
-  cardsArea.addEventListener('drop', (e) => {
-    if(isLocked) return;
-    e.preventDefault();
-    if(dragged) cardsArea.appendChild(dragged);
-    setRemaining();
+  phrasesArea.addEventListener('dragleave', (e) => {
+    if (!phrasesArea.contains(e.relatedTarget)) phrasesArea.classList.remove('drag-over');
   });
 
-  // Dropzones
+  phrasesArea.addEventListener('drop', (e) => {
+    if (isLocked) return;
+    e.preventDefault();
+    phrasesArea.classList.remove('drag-over');
+    if (dragged) { phrasesArea.appendChild(dragged); updateButtons(); }
+  });
+
   zones.forEach(zone => {
     zone.addEventListener('dragover', (e) => {
-      if(isLocked) return;
-      e.preventDefault();
-      zone.classList.add('drag-over');
+      if (!isLocked) { e.preventDefault(); zone.classList.add('drag-over'); }
     });
 
     zone.addEventListener('dragleave', (e) => {
-      if(!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+      if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
     });
 
     zone.addEventListener('drop', (e) => {
-      if(isLocked) return;
+      if (isLocked) return;
       e.preventDefault();
       zone.classList.remove('drag-over');
-      if(dragged) zone.appendChild(dragged);
-      setRemaining();
+      if (dragged) { zone.appendChild(dragged); updateButtons(); }
     });
   });
 
-  function check(){
-    if(isLocked) return;
-    if(cardsArea.querySelectorAll('.card').length > 0) return;
+  // Nova rodada: 12 cartas (4 por tipo), sempre embaralhadas
+  function loadNewRound() {
+    clearAll();
 
+    const allCards = Array.from(cardContainer.querySelectorAll('.card'));
+
+    const structured = allCards.filter(c => c.dataset.answer === 'estruturado');
+    const semi = allCards.filter(c => c.dataset.answer === 'semi');
+    const unstructured = allCards.filter(c => c.dataset.answer === 'nao');
+
+    const pick = (arr, n) => shuffle([...arr]).slice(0, n);
+
+    const selected = [
+      ...pick(structured, 4),
+      ...pick(semi, 4),
+      ...pick(unstructured, 4)
+    ];
+
+    shuffle(selected).forEach(card => {
+      const cloned = card.cloneNode(true);
+      // ✅ garante estado “novo”
+      cloned.classList.remove('correct','wrong','locked','dragging');
+      cloned.draggable = true;
+      phrasesArea.appendChild(cloned);
+    });
+
+    isLocked = false;
+    updateButtons();
+  }
+
+  function check() {
+    if (phrasesArea.children.length > 0 || isLocked) return;
     isLocked = true;
 
-    document.querySelectorAll('.card').forEach(card => {
+    document.querySelectorAll('.dropzone .card').forEach(card => {
       card.classList.add('locked');
       card.draggable = false;
 
-      const zoneType = card.parentElement?.getAttribute('data-type');
+      const zoneType = card.parentElement.getAttribute('data-type');
       const correct = card.dataset.answer;
 
-      card.classList.remove('correct','wrong');
-      if(zoneType && zoneType === correct) card.classList.add('correct');
-      else if(zoneType) card.classList.add('wrong');
+      card.classList.remove('correct', 'wrong');
+      card.classList.add(zoneType === correct ? 'correct' : 'wrong');
     });
 
-    setRemaining();
+    updateButtons();
   }
 
-  function reset(){
-    loadBalanced();
+  function resetRound() {
+    round++;
+    roundBadge.textContent = `Rodada ${round}`;
+    loadNewRound();
   }
+
+  // Inicial
+  roundBadge.textContent = `Rodada ${round}`;
+  loadNewRound();
 </script>
 
 </body>
