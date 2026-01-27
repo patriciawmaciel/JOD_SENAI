@@ -1,17 +1,168 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Atividades – SENAI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Atividades – SENAI-PE | JOD</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(20px);
+      border-radius: 1.5rem;
+      padding: 3rem;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      margin-bottom: 3rem;
+      line-height: 1.6;
+    }
+
+    .activities {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 1.2rem;
+      padding: 1.75rem;
+      text-decoration: none;
+      color: #f8fafc;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.08),
+        transparent
+      );
+      transition: left 0.5s ease;
+    }
+
+    .card:hover::before {
+      left: 100%;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      border-color: rgba(96, 165, 250, 0.6);
+    }
+
+    .card h2 {
+      font-size: 1.2rem;
+      margin: 0 0 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: #94a3b8;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 1rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 2rem;
+      }
+      h1 {
+        font-size: 2.1rem;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<h1>Atividades – Curso de Dados e Governança</h1>
-<ul>
-  <li>
-    <a href="./dinamica-dado-info-decisao/">
-      Dinâmica — Dado, Informação ou Decisão
-    </a>
-  </li>
-</ul>
+  <div class="container">
+    <h1>Atividades – SENAI-PE</h1>
+
+    <p class="subtitle">
+      JOD — Jornada Orientada a Dados<br>
+      Dinâmicas interativas para desenvolvimento do letramento em dados,
+      analytics e governança da informação.
+    </p>
+
+    <div class="activities">
+      <!-- ATIVIDADE 1 -->
+      <a class="card" href="./dinamica-dado-info-decisao/">
+        <h2>📊 Dado, Informação ou Decisão</h2>
+        <p>
+          Classifique frases e exercite a diferença entre registros brutos,
+          interpretações e ações baseadas em dados.
+        </p>
+      </a>
+
+      <!-- ATIVIDADE 2 -->
+      <a class="card" href="./dinamica-tipos-de-dados/">
+        <h2>📂 Tipos de Dados</h2>
+        <p>
+          Identifique e classifique dados estruturados, semi-estruturados
+          e não estruturados a partir de exemplos do dia a dia institucional.
+        </p>
+      </a>
+    </div>
+
+    <div class="footer">
+      Nem todo dado vira informação.<br>
+      Nem toda informação sustenta uma decisão.
+    </div>
+  </div>
 </body>
 </html>
+
