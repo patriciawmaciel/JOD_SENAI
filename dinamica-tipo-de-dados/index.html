@@ -52,7 +52,7 @@
 
   .board{
     display:grid;
-    grid-template-columns: 420px 1fr; /* 👈 UX bom: banco fixo + painel grande */
+    grid-template-columns: 420px 1fr;
     gap: 1.4rem;
     align-items: start;
   }
@@ -99,9 +99,9 @@
     border-radius: 999px;
     border: 1px solid rgba(148,163,184,0.22);
     background: rgba(2,10,25,0.22);
+    white-space: nowrap;
   }
 
-  /* Banco de cartas */
   .cards-area{
     padding: 1.1rem;
     display:flex;
@@ -115,6 +115,14 @@
   .cards-area::-webkit-scrollbar-thumb{
     background: rgba(148,163,184,0.25);
     border-radius: 999px;
+  }
+
+  .empty-note{
+    padding: 1.1rem;
+    color:#cbd5e1;
+    opacity:.85;
+    font-weight:700;
+    line-height:1.5;
   }
 
   .card{
@@ -151,7 +159,6 @@
     color:#fee2e2 !important;
   }
 
-  /* Tabs */
   .tabs{
     display:flex;
     gap:.75rem;
@@ -175,11 +182,7 @@
     transition: transform .15s ease, border-color .15s ease;
   }
 
-  .tab:hover{
-    transform: translateY(-1px);
-    border-color: rgba(96,165,250,0.55);
-  }
-
+  .tab:hover{ transform: translateY(-1px); border-color: rgba(96,165,250,0.55); }
   .tab.active{
     border-color: rgba(96,165,250,0.9);
     box-shadow: 0 0 0 2px rgba(96,165,250,0.18) inset;
@@ -194,9 +197,7 @@
     font-size: 16px;
   }
 
-  .drop-wrapper{
-    padding: 1.1rem;
-  }
+  .drop-wrapper{ padding: 1.1rem; }
 
   .dropzone{
     min-height: 56vh;
@@ -285,13 +286,17 @@
       <div class="panel-header">
         <span>🗂️ Banco de Cartas</span>
         <span class="meta">
-          <span class="pill" id="remainingPill">Restantes: 0</span>
+          <span class="pill" id="remainingPill">Restantes: —</span>
         </span>
       </div>
       <div class="cards-area" id="cardsArea"></div>
+      <div class="empty-note" id="emptyNote" style="display:none">
+        ⚠️ <b>Baralho não carregou.</b><br>
+        Verifique se o bloco <code>#deck</code> existe no final do HTML e tem cartas dentro.
+      </div>
     </section>
 
-    <!-- CLASSIFICAÇÃO (TABS) -->
+    <!-- CLASSIFICAÇÃO -->
     <section class="panel">
       <div class="panel-header">
         <span>🎯 Classificação</span>
@@ -313,9 +318,9 @@
       </div>
 
       <div class="drop-wrapper">
-        <div class="dropzone" id="dropzoneEstruturado" data-type="estruturado"></div>
-        <div class="dropzone" id="dropzoneSemi" data-type="semi" style="display:none"></div>
-        <div class="dropzone" id="dropzoneNao" data-type="nao" style="display:none"></div>
+        <div class="dropzone" id="dzE" data-type="estruturado"></div>
+        <div class="dropzone" id="dzS" data-type="semi" style="display:none"></div>
+        <div class="dropzone" id="dzN" data-type="nao" style="display:none"></div>
       </div>
     </section>
   </div>
@@ -331,7 +336,7 @@
   </div>
 </div>
 
-<!-- BARALHO COMPLETO -->
+<!-- BARALHO COMPLETO (não aparece) -->
 <div id="deck" style="display:none">
   <!-- Estruturados -->
   <div class="card" draggable="true" data-answer="estruturado">Planilha de presença (data, turma, aluno).</div>
@@ -361,16 +366,17 @@
 <script>
   const cardsArea = document.getElementById('cardsArea');
   const deck = document.getElementById('deck');
+  const emptyNote = document.getElementById('emptyNote');
+
   const checkBtn = document.getElementById('checkBtn');
   const resetBtn = document.getElementById('resetBtn');
-
   const remainingPill = document.getElementById('remainingPill');
   const roundPill = document.getElementById('roundPill');
 
   const tabs = Array.from(document.querySelectorAll('.tab'));
-  const dzE = document.getElementById('dropzoneEstruturado');
-  const dzS = document.getElementById('dropzoneSemi');
-  const dzN = document.getElementById('dropzoneNao');
+  const dzE = document.getElementById('dzE');
+  const dzS = document.getElementById('dzS');
+  const dzN = document.getElementById('dzN');
   const allDropzones = [dzE, dzS, dzN];
 
   let dragged = null;
@@ -411,13 +417,24 @@
 
   function loadRound(){
     clearAll();
-    const selected = pickBalanced(4); // 12 cartas (4 de cada tipo)
+
+    const total = deck.querySelectorAll('.card').length;
+    if(!total){
+      emptyNote.style.display = 'block';
+      remainingPill.textContent = 'Restantes: —';
+      return;
+    } else {
+      emptyNote.style.display = 'none';
+    }
+
+    const selected = pickBalanced(4); // 12 cartas
     selected.forEach(c=>{
       const clone = c.cloneNode(true);
       clone.classList.remove('correct','wrong','locked','dragging');
       clone.draggable = true;
       cardsArea.appendChild(clone);
     });
+
     updateButtons();
   }
 
@@ -472,8 +489,8 @@
     btn.addEventListener('click', ()=>{
       tabs.forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
-
       const target = btn.dataset.tab;
+
       dzE.style.display = (target === 'estruturado') ? 'flex' : 'none';
       dzS.style.display = (target === 'semi') ? 'flex' : 'none';
       dzN.style.display = (target === 'nao') ? 'flex' : 'none';
@@ -505,7 +522,6 @@
   }
 
   // Init
-  remainingPill.textContent = `Restantes: 0`;
   roundPill.textContent = `Rodada ${round}`;
   loadRound();
 </script>
