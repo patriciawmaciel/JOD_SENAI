@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JOD — Tipos de Dados | Cidade (CSS)</title>
+
+<style>
+  * { box-sizing: border-box; }
+  :root{
+    --bg1:#0b1223;
+    --bg2:#0a1731;
+    --text:#e5e7eb;
+    --muted:#94a3b8;
+
+    --blue:#60a5fa;
+    --purple:#a78bfa;
+    --green:#34d399;
+
+    --stroke:rgba(148,163,184,.22);
+    --shadow: 0 18px 46px rgba(0,0,0,.40);
+    --radius: 22px;
+  }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(circle at 20% 80%, rgba(96,165,250,.14), transparent 52%),
+      radial-gradient(circle at 80% 20%, rgba(167,139,250,.12), transparent 52%),
+      radial-gradient(circle at 55% 55%, rgba(52,211,153,.10), transparent 60%),
+      linear-gradient(135deg, var(--bg1), var(--bg2));
+    overflow-x:hidden;
+  }
+
+  .container{
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2.2rem 1.2rem 2.6rem;
+  }
+
+  .header{
+    text-align:center;
+    padding: .6rem 0 1.3rem;
+  }
+  h1{
+    margin:0 0 .4rem;
+    font-size: clamp(2.1rem, 4vw, 3.2rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--blue), var(--purple), var(--green));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .subtitle{
+    margin:0 auto;
+    max-width: 980px;
+    color: rgba(203,213,225,.95);
+    line-height: 1.6;
+    font-size: 1.06rem;
+  }
+
+  .topbar{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:.6rem;
+    margin-top: .95rem;
+  }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:.55rem;
+    padding:.45rem .85rem;
+    border-radius: 999px;
+    background: rgba(2,10,25,.30);
+    border: 1px solid rgba(148,163,184,.20);
+    color: rgba(219,234,254,.95);
+    font-weight: 850;
+    font-size:.95rem;
+    backdrop-filter: blur(10px);
+  }
+  .pill b{ color:#fff; }
+
+  .panel{
+    background: rgba(15,23,42,.78);
+    border: 1px solid rgba(148,163,184,.18);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+    position: relative;
+  }
+  .panel::before{
+    content:"";
+    position:absolute;
+    inset: 0 0 auto 0;
+    height:3px;
+    background: linear-gradient(90deg, transparent, rgba(96,165,250,.9), transparent);
+    pointer-events:none;
+  }
+  .panel-head{
+    padding: 1rem 1.1rem;
+    border-bottom: 1px solid rgba(148,163,184,.14);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 1rem;
+  }
+  .panel-title{
+    display:flex;
+    align-items:center;
+    gap:.55rem;
+    font-weight: 900;
+    letter-spacing:.01em;
+  }
+  .mini{
+    color: rgba(203,213,225,.85);
+    font-weight: 750;
+    font-size:.95rem;
+    opacity:.9;
+  }
+
+  /* BANK */
+  .cards-area{
+    padding: 1rem 1.1rem 1.2rem;
+    display:flex;
+    flex-wrap:wrap;
+    gap:.8rem;
+    justify-content:center;
+    min-height: 90px;
+    background: rgba(59,130,246,.04);
+  }
+  .cards-area:empty{
+    min-height: 90px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .cards-area:empty::after{
+    content:"Banco vazio — distribua as cartas nas zonas da cidade!";
+    color: rgba(148,163,184,.85);
+    font-style: italic;
+  }
+  .cards-area.drag-over{
+    background: rgba(96,165,250,.10);
+  }
+
+  .card{
+    width: min(360px, 100%);
+    padding: .95rem 1.1rem;
+    border-radius: 16px;
+    background: rgba(30,41,59,.90);
+    border: 1px solid rgba(148,163,184,.20);
+    box-shadow: 0 10px 26px rgba(0,0,0,.25);
+    cursor: grab;
+    user-select:none;
+    font-weight: 780;
+    line-height: 1.35;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(0,0,0,.32);
+    border-color: rgba(96,165,250,.5);
+  }
+  .card:active{ cursor: grabbing; transform: scale(.99); }
+  .card.dragging{ opacity:.45; }
+
+  /* CITY */
+  .stage{ margin-top: 1.2rem; }
+  .stage-body{ padding: 1rem 1.1rem 1.25rem; }
+
+  .city-wrapper{
+    position: relative;
+    width: 100%;
+    border-radius: 20px;
+    border: 1px solid rgba(148,163,184,.18);
+    background: rgba(2,10,25,.18);
+    overflow: hidden;
+  }
+  .city-wrapper::before{
+    content:"";
+    display:block;
+    padding-top: 54%;
+  }
+
+  .city{
+    position:absolute;
+    inset:0;
+  }
+
+  .city::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 15% 35%, rgba(96,165,250,.12), transparent 45%),
+      radial-gradient(circle at 85% 35%, rgba(167,139,250,.10), transparent 50%),
+      radial-gradient(circle at 52% 80%, rgba(52,211,153,.10), transparent 55%),
+      linear-gradient(to bottom, rgba(2,10,25,.10), rgba(2,10,25,.55)),
+      repeating-linear-gradient(90deg, rgba(148,163,184,.06) 0 1px, transparent 1px 42px),
+      repeating-linear-gradient(0deg, rgba(148,163,184,.05) 0 1px, transparent 1px 42px);
+    opacity: .95;
+    pointer-events:none;
+  }
+
+  .road{
+    position:absolute;
+    left:-10%;
+    right:-10%;
+    height: 76px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(31,42,68,.55), rgba(21,34,56,.50));
+    box-shadow: inset 0 0 0 10px rgba(14,21,37,.55);
+    opacity:.65;
+    filter: blur(.2px);
+  }
+  .road.r1{ top: 46%; transform: rotate(-6deg); }
+  .road.r2{
+    top: 18%;
+    left:-20%;
+    right:-20%;
+    height: 56px;
+    opacity:.55;
+    transform: rotate(10deg);
+  }
+
+  /* silhouettes */
+  .zone-silhouette{
+    position:absolute;
+    border-radius: 28px;
+    background: rgba(148,163,184,.06);
+    border: 1px solid rgba(148,163,184,.14);
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+    overflow:hidden;
+  }
+
+  /* Prédios (Estruturados) - esquerda */
+  .sil-build{
+    left: 4.5%;
+    top: 11%;
+    width: 44%;
+    height: 54%;
+  }
+  .sil-build .b{
+    position:absolute;
+    bottom: 14%;
+    width: 14%;
+    border-radius: 14px;
+    background: rgba(43,64,107,.45);
+    border: 1px solid rgba(148,163,184,.18);
+  }
+  .sil-build .b:nth-child(1){ left: 16%; height: 46%; }
+  .sil-build .b:nth-child(2){ left: 36%; height: 62%; background: rgba(35,51,86,.42); }
+  .sil-build .b:nth-child(3){ left: 58%; height: 50%; }
+  .sil-build .win{
+    position:absolute;
+    left: 18%;
+    top: 18%;
+    width: 64%;
+    height: 6px;
+    border-radius: 6px;
+    background: rgba(203,213,225,.22);
+  }
+  .sil-build .b .win:nth-child(2){ top: 30%; }
+  .sil-build .b .win:nth-child(3){ top: 42%; }
+  .sil-build .b .win:nth-child(4){ top: 54%; }
+  .sil-build .b .win:nth-child(5){ top: 66%; }
+
+  /* Ruas (Semi) - direita em cima */
+  .sil-net{
+    right: 4.5%;
+    top: 13%;
+    width: 46%;
+    height: 54%;
+  }
+  .node{
+    position:absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(148,163,184,.25);
+    box-shadow: 0 0 0 6px rgba(148,163,184,.06);
+  }
+  .node.n1{ left: 20%; top: 55%; background: rgba(139,92,246,.35); }
+  .node.n2{ left: 52%; top: 32%; background: rgba(59,130,246,.35); }
+  .node.n3{ left: 78%; top: 58%; background: rgba(139,92,246,.35); }
+  .node.n4{ left: 46%; top: 72%; background: rgba(59,130,246,.35); }
+  .edge{
+    position:absolute;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(203,213,225,.16);
+    transform-origin: left center;
+    opacity:.85;
+  }
+  .edge.e12{ left: 22%; top: 56%; width: 38%; transform: rotate(-24deg); }
+  .edge.e23{ left: 54%; top: 35%; width: 28%; transform: rotate(26deg); }
+  .edge.e34{ left: 49%; top: 72%; width: 33%; transform: rotate(-18deg); }
+  .edge.e14{ left: 22%; top: 56%; width: 31%; transform: rotate(18deg); }
+
+  /* Praças (Não) - baixo */
+  .sil-plaza{
+    left: 22%;
+    top: 70%;
+    width: 56%;
+    height: 25%;
+    background: rgba(16,58,47,.20);
+    border-color: rgba(148,163,184,.16);
+  }
+  .tree{
+    position:absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: rgba(16,185,129,.28);
+    border: 1px solid rgba(148,163,184,.16);
+    box-shadow: 0 0 0 8px rgba(16,185,129,.07);
+  }
+  .tree.t1{ left: 18%; top: 45%; }
+  .tree.t2{ left: 38%; top: 58%; width: 14px; height: 14px; }
+  .tree.t3{ left: 62%; top: 42%; width: 16px; height: 16px; }
+  .bench{
+    position:absolute;
+    left: 40%;
+    top: 72%;
+    width: 22%;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(203,213,225,.14);
+  }
+
+  /* labels (keep the "first concept" wording) */
+  .zone-label{
+    position:absolute;
+    padding: .7rem .9rem;
+    border-radius: 18px;
+    background: rgba(15,23,42,.68);
+    border: 1px solid rgba(148,163,184,.20);
+    backdrop-filter: blur(10px);
+    font-weight: 900;
+    letter-spacing:.01em;
+    box-shadow: 0 14px 30px rgba(0,0,0,.20);
+  }
+  .zone-label small{
+    display:block;
+    font-weight: 750;
+    color: rgba(203,213,225,.85);
+    margin-top:.18rem;
+  }
+  .label-e{ left: 8%; top: 9%; }
+  .label-s{ right: 8%; top: 11%; }
+  .label-n{ left: 30%; top: 66%; }
+
+  /* overlay dropzones */
+  .zones-overlay{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+  .dropzone{
+    position:absolute;
+    border-radius: 28px;
+    pointer-events:auto;
+  }
+  .dropzone .dock{
+    position:absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+
+    /* Reserve top so pins never cover the label area */
+    top: 96px;
+
+    border-radius: 16px;
+    border: 2px dashed rgba(148,163,184,.30);
+    background: rgba(2,10,25,.10);
+    padding: 10px;
+    overflow:auto;
+  }
+  .dropzone.drag-over .dock{
+    border-color: rgba(96,165,250,.75);
+    background: rgba(15,23,42,.55);
+    box-shadow: 0 0 0 2px rgba(96,165,250,.15);
+  }
+  .pins{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 8px;
+    align-content:flex-start;
+  }
+
+  #dz-estruturado{ left: 4.5%; top: 11%; width: 44%; height: 54%; }
+  #dz-semi{ right: 4.5%; top: 13%; width: 46%; height: 54%; }
+  #dz-nao{ left: 22%; top: 70%; width: 56%; height: 25%; }
+
+  /* pins */
+  .pin{
+    position: relative;
+    display:inline-flex;
+    align-items:flex-start;
+    gap:.5rem;
+    padding: .45rem .65rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148,163,184,.18);
+    background: rgba(30,41,59,.92);
+    box-shadow: 0 10px 20px rgba(0,0,0,.18);
+    user-select:none;
+    cursor: grab;
+    max-width: 240px;
+    min-width: 160px;
+  }
+  .pin:active{ cursor: grabbing; transform: scale(.99); }
+  .pin.dragging{ opacity:.45; }
+
+  .dot{
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    margin-top: 4px;
+    flex: 0 0 auto;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.10);
+  }
+  .pin[data-answer="estruturado"] .dot{ background: rgba(96,165,250,.95); }
+  .pin[data-answer="semi"] .dot{ background: rgba(167,139,250,.95); }
+  .pin[data-answer="nao"] .dot{ background: rgba(52,211,153,.95); }
+
+  .short{
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 900;
+    font-size: .92rem;
+    line-height: 1.2;
+  }
+
+  .pin::after{
+    content: attr(data-full);
+    position:absolute;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    transform: translateX(-50%);
+    width: min(440px, 80vw);
+    padding: .75rem .9rem;
+    border-radius: 14px;
+    background: rgba(15,23,42,.96);
+    border: 1px solid rgba(148,163,184,.25);
+    box-shadow: 0 18px 44px rgba(0,0,0,.35);
+    color: #f8fafc;
+    font-weight: 780;
+    font-size: .95rem;
+    line-height: 1.35;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .15s ease;
+    z-index: 50;
+  }
+  .pin::before{
+    content:"";
+    position:absolute;
+    left: 50%;
+    bottom: calc(100% + 2px);
+    width: 10px;
+    height: 10px;
+    transform: translateX(-50%) rotate(45deg);
+    background: rgba(15,23,42,.96);
+    border-left: 1px solid rgba(148,163,184,.25);
+    border-top: 1px solid rgba(148,163,184,.25);
+    opacity:0;
+    transition: opacity .15s ease;
+    z-index: 51;
+  }
+  .pin:hover::after,
+  .pin:hover::before{ opacity:1; }
+
+  /* check feedback */
+  .correct{
+    background: rgba(16,185,129,.16) !important;
+    border-color: rgba(16,185,129,.75) !important;
+    color: rgba(209,250,229,.95) !important;
+  }
+  .wrong{
+    background: rgba(239,68,68,.16) !important;
+    border-color: rgba(239,68,68,.75) !important;
+    color: rgba(254,226,226,.95) !important;
+  }
+  .locked{
+    cursor:not-allowed !important;
+    opacity:.92;
+  }
+
+  /* controls */
+  .controls{
+    display:flex;
+    justify-content:center;
+    gap: .9rem;
+    flex-wrap:wrap;
+    margin-top: 1rem;
+  }
+  button{
+    border-radius: 999px;
+    border: 1px solid rgba(148,163,184,.30);
+    padding: .95rem 1.6rem;
+    font-size: 1rem;
+    font-weight: 900;
+    background: rgba(30,41,59,.85);
+    color: var(--text);
+    cursor:pointer;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease;
+    box-shadow: 0 10px 26px rgba(0,0,0,.22);
+  }
+  button:hover{
+    transform: translateY(-2px);
+    border-color: rgba(96,165,250,.55);
+    box-shadow: 0 14px 32px rgba(0,0,0,.28);
+  }
+  button:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+    transform:none;
+    box-shadow:none;
+  }
+
+  .footer-note{
+    text-align:center;
+    margin-top: 1rem;
+    color: rgba(148,163,184,.95);
+    font-weight: 750;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 880px){
+    .city-wrapper::before{ padding-top: 88%; }
+    .dropzone .dock{ top: 92px; }
+
+    /* stack zones */
+    #dz-estruturado{ left: 6%; top: 10%; width: 88%; height: 26%; }
+    #dz-semi{ left: 6%; top: 38%; width: 88%; height: 26%; }
+    #dz-nao{ left: 6%; top: 66%; width: 88%; height: 28%; }
+
+    .sil-build{ left: 6%; top: 10%; width: 88%; height: 26%; }
+    .sil-net{ left: 6%; top: 38%; width: 88%; height: 26%; }
+    .sil-plaza{ left: 6%; top: 66%; width: 88%; height: 28%; }
+
+    .label-e{ left: 9%; top: 7%; }
+    .label-s{ left: 9%; top: 35%; right:auto; }
+    .label-n{ left: 9%; top: 63%; }
+  }
+</style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="header">
+      <h1>Tipos de Dados — A Cidade</h1>
+      <p class="subtitle">
+        Arraste as cartas do <b>Banco</b> para a região correta da cidade. Ao soltar, elas viram <b>pins</b> pequenos.
+        <br><b>Dica:</b> “Prédios” = formato fixo • “Ruas” = padrão com flexibilidade • “Praças” = conteúdo livre
+      </p>
+
+      <div class="topbar">
+        <div class="pill">🧩 Cartas por rodada: <b id="perRound">8</b></div>
+        <div class="pill">🗂️ Restantes no banco: <b id="remaining">—</b></div>
+        <div class="pill">🎮 Rodada: <b id="round">1</b></div>
+      </div>
+    </div>
+
+    <!-- BANCO -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">🗃️ Banco de Cartas</div>
+        <div class="mini">Arraste para a cidade (vira pin)</div>
+      </div>
+      <div class="cards-area" id="cardsArea"></div>
+    </section>
+
+    <!-- CIDADE -->
+    <section class="panel stage">
+      <div class="panel-head">
+        <div class="panel-title">🏙️ A Cidade dos Dados (CSS)</div>
+        <div class="mini">Mapa conceitual para Estruturados, Semi e Não Estruturados</div>
+      </div>
+
+      <div class="stage-body">
+        <div class="city-wrapper" aria-label="Cidade dos Dados">
+
+          <div class="city">
+            <div class="road r2"></div>
+            <div class="road r1"></div>
+
+            <!-- Visual silhouettes -->
+            <div class="zone-silhouette sil-build" aria-hidden="true">
+              <div class="b">
+                <div class="win"></div><div class="win"></div><div class="win"></div><div class="win"></div><div class="win"></div>
+              </div>
+              <div class="b">
+                <div class="win"></div><div class="win"></div><div class="win"></div><div class="win"></div><div class="win"></div>
+              </div>
+              <div class="b">
+                <div class="win"></div><div class="win"></div><div class="win"></div><div class="win"></div><div class="win"></div>
+              </div>
+            </div>
+
+            <div class="zone-silhouette sil-net" aria-hidden="true">
+              <div class="edge e12"></div>
+              <div class="edge e23"></div>
+              <div class="edge e34"></div>
+              <div class="edge e14"></div>
+              <div class="node n1"></div>
+              <div class="node n2"></div>
+              <div class="node n3"></div>
+              <div class="node n4"></div>
+            </div>
+
+            <div class="zone-silhouette sil-plaza" aria-hidden="true">
+              <div class="tree t1"></div>
+              <div class="tree t2"></div>
+              <div class="tree t3"></div>
+              <div class="bench"></div>
+            </div>
+
+            <!-- Labels with the names you liked -->
+            <div class="zone-label label-e">
+              🏢 Prédios Administrativos
+              <small>Dados estruturados (formato fixo)</small>
+            </div>
+            <div class="zone-label label-s">
+              🛣️ Ruas &amp; Infraestrutura
+              <small>Dados semi-estruturados (padrão + variações)</small>
+            </div>
+            <div class="zone-label label-n">
+              🌳 Praças &amp; Espaços Abertos
+              <small>Dados não estruturados (conteúdo livre)</small>
+            </div>
+          </div>
+
+          <!-- Interactive overlays -->
+          <div class="zones-overlay">
+            <div class="dropzone" id="dz-estruturado" data-type="estruturado">
+              <div class="dock"><div class="pins" id="pins-estruturado"></div></div>
+            </div>
+            <div class="dropzone" id="dz-semi" data-type="semi">
+              <div class="dock"><div class="pins" id="pins-semi"></div></div>
+            </div>
+            <div class="dropzone" id="dz-nao" data-type="nao">
+              <div class="dock"><div class="pins" id="pins-nao"></div></div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="controls">
+          <button id="checkBtn" onclick="check()" disabled>Conferir Respostas</button>
+          <button id="nextBtn" onclick="nextRound()" disabled>Nova Rodada</button>
+        </div>
+
+        <div class="footer-note">
+          Nem todo dado chega “pronto” como tabela: às vezes ele vem como rua (padrão) ou praça (texto/áudio/vídeo).
+        </div>
+      </div>
+    </section>
+
+    <!-- DECK (oculto) -->
+    <div id="deck" style="display:none">
+      <!-- Estruturados -->
+      <div class="card" draggable="true" data-answer="estruturado">Planilha de presença (data, turma, aluno).</div>
+      <div class="card" draggable="true" data-answer="estruturado">Cadastro de alunos no sistema (campos fixos).</div>
+      <div class="card" draggable="true" data-answer="estruturado">Tabela de matrículas (aluno, curso, status).</div>
+      <div class="card" draggable="true" data-answer="estruturado">Inventário de equipamentos (patrimônio, local, responsável).</div>
+      <div class="card" draggable="true" data-answer="estruturado">Tabela de notas (aluno, disciplina, nota).</div>
+      <div class="card" draggable="true" data-answer="estruturado">Lista de turmas (unidade, instrutor, horário).</div>
+      <div class="card" draggable="true" data-answer="estruturado">Registro de chamados (ID, data, área, status).</div>
+      <div class="card" draggable="true" data-answer="estruturado">Tabela de orçamento (centro, mês, valor).</div>
+      <div class="card" draggable="true" data-answer="estruturado">Base de inscrições (nome, CPF, curso).</div>
+
+      <!-- Semi-estruturados -->
+      <div class="card" draggable="true" data-answer="semi">Log de acesso do sistema (timestamp, usuário, evento).</div>
+      <div class="card" draggable="true" data-answer="semi">Formulário exportado em JSON (campos variáveis).</div>
+      <div class="card" draggable="true" data-answer="semi">Arquivo XML de integração entre sistemas.</div>
+      <div class="card" draggable="true" data-answer="semi">Payload de API (JSON com campos opcionais).</div>
+      <div class="card" draggable="true" data-answer="semi">Evento no formato key=value (usuario=ana;acao=login).</div>
+      <div class="card" draggable="true" data-answer="semi">Registro de auditoria com padrão repetido.</div>
+      <div class="card" draggable="true" data-answer="semi">Arquivo CSV exportado (padrão, mas flexível).</div>
+      <div class="card" draggable="true" data-answer="semi">Arquivo .eml exportado (headers + corpo).</div>
+      <div class="card" draggable="true" data-answer="semi">Log em texto com padrão fixo (data | nível | mensagem).</div>
+
+      <!-- Não estruturados -->
+      <div class="card" draggable="true" data-answer="nao">Texto livre de avaliação do curso.</div>
+      <div class="card" draggable="true" data-answer="nao">E-mail com justificativa de falta (texto livre).</div>
+      <div class="card" draggable="true" data-answer="nao">Áudio de atendimento gravado.</div>
+      <div class="card" draggable="true" data-answer="nao">Imagem escaneada de documento.</div>
+      <div class="card" draggable="true" data-answer="nao">Vídeo de uma aula gravada.</div>
+      <div class="card" draggable="true" data-answer="nao">Mensagem de WhatsApp com relato do aluno.</div>
+      <div class="card" draggable="true" data-answer="nao">PDF narrativo com comentários livres.</div>
+      <div class="card" draggable="true" data-answer="nao">Foto de equipamento com anotação em papel.</div>
+      <div class="card" draggable="true" data-answer="nao">Gravação de reunião com observações em áudio.</div>
+    </div>
+
+  </div>
+
+<script>
+  const CARDS_PER_ROUND = 8;
+
+  const cardsArea = document.getElementById('cardsArea');
+  const deckEl = document.getElementById('deck');
+
+  const remainingEl = document.getElementById('remaining');
+  const roundEl = document.getElementById('round');
+  const perRoundEl = document.getElementById('perRound');
+
+  const checkBtn = document.getElementById('checkBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  const dzE = document.getElementById('dz-estruturado');
+  const dzS = document.getElementById('dz-semi');
+  const dzN = document.getElementById('dz-nao');
+  const dropzones = [dzE, dzS, dzN];
+
+  const pinsE = document.getElementById('pins-estruturado');
+  const pinsS = document.getElementById('pins-semi');
+  const pinsN = document.getElementById('pins-nao');
+
+  let dragged = null;
+  let isLocked = false;
+  let round = 1;
+
+  let poolE = [];
+  let poolS = [];
+  let poolN = [];
+
+  function shuffle(arr){
+    for(let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function refillPoolsIfNeeded(){
+    const all = Array.from(deckEl.querySelectorAll('.card'));
+    const E = all.filter(c => c.dataset.answer === 'estruturado');
+    const S = all.filter(c => c.dataset.answer === 'semi');
+    const N = all.filter(c => c.dataset.answer === 'nao');
+
+    if(poolE.length < 2) poolE = shuffle([...E]);
+    if(poolS.length < 2) poolS = shuffle([...S]);
+    if(poolN.length < 2) poolN = shuffle([...N]);
+  }
+
+  function take(pool, n){ return pool.splice(0, n); }
+
+  function pickRoundCards(){
+    refillPoolsIfNeeded();
+
+    let eCount = 3, sCount = 3, nCount = 2;
+    if(round % 2 === 0){ sCount = 2; nCount = 3; }
+    if(round % 3 === 0){ eCount = 2; sCount = 3; nCount = 3; }
+
+    return shuffle([...take(poolE, eCount), ...take(poolS, sCount), ...take(poolN, nCount)]);
+  }
+
+  function resetZones(){
+    pinsE.innerHTML = '';
+    pinsS.innerHTML = '';
+    pinsN.innerHTML = '';
+    dropzones.forEach(z => z.classList.remove('drag-over'));
+  }
+
+  function updateButtons(){
+    const remaining = cardsArea.querySelectorAll('.card').length;
+    remainingEl.textContent = remaining;
+    checkBtn.disabled = (remaining > 0) || isLocked;
+    nextBtn.disabled = !isLocked;
+  }
+
+  function pinLabel(text){
+    const t = text.trim();
+    const breaks = [t.indexOf('.'), t.indexOf('—'), t.indexOf('('), t.indexOf(';'), t.indexOf(',')].filter(i => i > 0);
+    const firstBreak = breaks.length ? Math.min(...breaks) : -1;
+    if(firstBreak > 0 && firstBreak < 44) return t.slice(0, firstBreak).trim();
+    return (t.length > 48) ? (t.slice(0, 48).trim() + '…') : t;
+  }
+
+  function createPinFromText(full, answer){
+    const pin = document.createElement('div');
+    pin.className = 'pin';
+    pin.draggable = true;
+    pin.dataset.answer = answer;
+    pin.setAttribute('data-full', full);
+    pin.innerHTML = `<span class="dot"></span><span class="short">${pinLabel(full)}</span>`;
+    return pin;
+  }
+
+  function loadRound(){
+    isLocked = false;
+    cardsArea.innerHTML = '';
+    resetZones();
+
+    const selected = pickRoundCards();
+    selected.forEach(c => {
+      const clone = c.cloneNode(true);
+      clone.draggable = true;
+      clone.classList.remove('dragging');
+      cardsArea.appendChild(clone);
+    });
+
+    roundEl.textContent = round;
+    perRoundEl.textContent = CARDS_PER_ROUND;
+    updateButtons();
+  }
+
+  document.addEventListener('dragstart', (e) => {
+    if(isLocked) return;
+    const t = e.target;
+    if(t.classList.contains('card') || t.classList.contains('pin')){
+      dragged = t;
+      t.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', 'item');
+    }
+  });
+
+  document.addEventListener('dragend', () => {
+    if(dragged) dragged.classList.remove('dragging');
+    dragged = null;
+  });
+
+  // drop back to bank
+  cardsArea.addEventListener('dragover', (e) => {
+    if(isLocked) return;
+    e.preventDefault();
+    cardsArea.classList.add('drag-over');
+  });
+  cardsArea.addEventListener('dragleave', (e) => {
+    if(!cardsArea.contains(e.relatedTarget)) cardsArea.classList.remove('drag-over');
+  });
+  cardsArea.addEventListener('drop', (e) => {
+    if(isLocked) return;
+    e.preventDefault();
+    cardsArea.classList.remove('drag-over');
+    if(!dragged) return;
+
+    if(dragged.classList.contains('pin')){
+      const full = dragged.getAttribute('data-full');
+      const answer = dragged.dataset.answer;
+
+      const back = document.createElement('div');
+      back.className = 'card';
+      back.draggable = true;
+      back.dataset.answer = answer;
+      back.textContent = full;
+
+      cardsArea.appendChild(back);
+      dragged.remove();
+    } else {
+      cardsArea.appendChild(dragged);
+    }
+
+    updateButtons();
+  });
+
+  // zones
+  dropzones.forEach(zone => {
+    zone.addEventListener('dragover', (e) => {
+      if(isLocked) return;
+      e.preventDefault();
+      zone.classList.add('drag-over');
+    });
+
+    zone.addEventListener('dragleave', (e) => {
+      if(!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+    });
+
+    zone.addEventListener('drop', (e) => {
+      if(isLocked) return;
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      if(!dragged) return;
+
+      const type = zone.dataset.type;
+      const targetPins = type === 'estruturado' ? pinsE : type === 'semi' ? pinsS : pinsN;
+
+      if(dragged.classList.contains('card')){
+        const full = dragged.textContent.trim();
+        const answer = dragged.dataset.answer;
+        targetPins.appendChild(createPinFromText(full, answer));
+        dragged.remove();
+      } else if(dragged.classList.contains('pin')){
+        targetPins.appendChild(dragged);
+      }
+
+      updateButtons();
+    });
+  });
+
+  function check(){
+    if(isLocked) return;
+    if(cardsArea.querySelectorAll('.card').length > 0) return;
+
+    isLocked = true;
+
+    document.querySelectorAll('.pin').forEach(pin => {
+      pin.classList.add('locked');
+      pin.draggable = false;
+      pin.classList.remove('correct','wrong');
+
+      const correct = pin.dataset.answer;
+      const zone = pin.closest('.dropzone')?.dataset.type;
+
+      pin.classList.add(correct === zone ? 'correct' : 'wrong');
+    });
+
+    updateButtons();
+  }
+
+  function nextRound(){
+    if(!isLocked) return;
+    round++;
+    loadRound();
+  }
+
+  window.check = check;
+  window.nextRound = nextRound;
+
+  loadRound();
+</script>
+</body>
+</html>
