@@ -549,6 +549,33 @@
     .label-s{ left: 9%; top: 35%; right:auto; }
     .label-n{ left: 9%; top: 63%; }
   }
+
+<head>
+  <meta charset="UTF-8">
+  <title>Tipos de Dados</title>
+
+  <style>
+    /* todo o seu CSS já existente */
+    body { ... }
+    .zone { ... }
+    .dock { ... }
+    .pin { ... }
+
+    /* ⬇️ COLE AQUI, NO FINAL ⬇️ */
+
+    /* Esconder scrollbar (mantém scroll funcionando) */
+    .dock {
+      scrollbar-width: none;        /* Firefox */
+      -ms-overflow-style: none;     /* IE / Edge antigo */
+    }
+
+    .dock::-webkit-scrollbar {
+      display: none;                /* Chrome, Edge, Safari */
+    }
+
+  </style>
+</head>
+ 
 </style>
 </head>
 
@@ -929,6 +956,7 @@
 </script>
 </body>
 </html>
+
 
 
 
