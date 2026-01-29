@@ -573,6 +573,14 @@
       display: none;                /* Chrome, Edge, Safari */
     }
 
+ /* Força bolinha neutra (remove “cola” por cor) */
+.dot { background: rgba(203,213,225,.9) !important; }
+
+/* Cores só como feedback após conferir */
+.pin.correct .dot { background: #10b981 !important; }
+.pin.wrong .dot   { background: #ef4444 !important; }
+
+ 
 </style>
 </head>
 
@@ -953,6 +961,7 @@
 </script>
 </body>
 </html>
+
 
 
 
